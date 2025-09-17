@@ -9,7 +9,21 @@ package hashgui;
  *
  * @author Lenovo
  */
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 public class HashTableGUI extends javax.swing.JFrame {
+    private HashTable hashTable;
+    
+    private void actualizarTabla() {
+        String[] snapshot = hashTable.snapshot();
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0); // limpia filas anteriores
+        for (int i = 0; i < snapshot.length; i++) {
+            model.addRow(new Object[]{i, snapshot[i]});
+        }
+    }
+
     /**
      * Creates new form HashTableGUI
      */
@@ -17,6 +31,12 @@ public class HashTableGUI extends javax.swing.JFrame {
         initComponents();
         setTitle("Hash Visualizer - Avance 2");
         setLocationRelativeTo(null); 
+        hashTable = new HashTable((Integer) jSpinner1.getValue()); 
+        DefaultTableModel model = new DefaultTableModel(
+            new Object [][] {}, 
+            new String [] { "Índice", "Contenido" }
+        );
+        jTable1.setModel(model);
     }
 
     /**
@@ -43,10 +63,25 @@ public class HashTableGUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jButton1.setText("Insertar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Buscar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Eliminar");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Limpiar");
 
@@ -130,6 +165,39 @@ public class HashTableGUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String key = jTextField1.getText().trim();
+        if (!key.isEmpty()) {
+            boolean ok = hashTable.insert(key);
+            actualizarTabla();
+            jTextArea1.setText(hashTable.getLastLog());
+            if (!ok) JOptionPane.showMessageDialog(this, "No se pudo insertar (tabla llena).");
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        String key = jTextField1.getText().trim();
+        if (!key.isEmpty()) {
+            boolean ok = hashTable.search(key);
+            actualizarTabla();
+            jTextArea1.setText(hashTable.getLastLog());
+            JOptionPane.showMessageDialog(this, ok ? "Encontrado" : "No encontrado");
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        String key = jTextField1.getText().trim();
+        if (!key.isEmpty()) {
+            boolean ok = hashTable.delete(key);
+            actualizarTabla();
+            jTextArea1.setText(hashTable.getLastLog());
+            JOptionPane.showMessageDialog(this, ok ? "Eliminado" : "No encontrado");
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
